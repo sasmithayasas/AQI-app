@@ -51,7 +51,7 @@ function AppInner() {
   React.useEffect(() => {
     let isMounted = true;
     setLoading(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://192.168.1.2:8000";
+    const API_URL = import.meta.env.VITE_API_URL || "https://aqi-app-f5sq.onrender.com";
     fetch(`${API_URL}/api/forecast?city=${selectedCity}`)
       .then(res => res.json())
       .then(data => {
@@ -85,7 +85,7 @@ function AppInner() {
   const refreshData = () => {
     let isMounted = true;
     setLoading(true);
-    const API_URL = import.meta.env.VITE_API_URL || "http://192.168.1.2:8000";
+    const API_URL = import.meta.env.VITE_API_URL || "https://aqi-app-f5sq.onrender.com";
     fetch(`${API_URL}/api/forecast?city=${selectedCity}`)
       .then(res => res.json())
       .then(data => {

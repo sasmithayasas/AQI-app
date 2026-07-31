@@ -21,7 +21,7 @@ aqi-mock-app/android/app/src/main/assets/public/
 *.aab
 
 # Data (Ignore all large files, but KEEP the models folder)
-files/
+files/*
 !files/training/
 files/training/*
 !files/training/outputs/
