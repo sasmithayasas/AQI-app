@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Fira+Sans:wght@400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  min-height: max(884px, 100dvh);
+  font-family: 'Fira Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: transparent !important;
+}
+
+/* Frutiger Glass Effect */
+.frutiger-glass {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.3), 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* Glass Pod (Health page variant) */
+.glass-pod {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 101, 141, 0.08);
+  border-radius: 24px;
+}
+
+/* Aqua Button */
+.aqua-button {
+  background: linear-gradient(180deg, #82cfff 0%, #00aeef 50%, #00658d 100%);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+.aqua-button::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 10%;
+  width: 80%;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%);
+  border-radius: 50%;
+}
+
+/* Skeletal Ring (Kandy page) */
+.skeletal-ring {
+  background: conic-gradient(from 180deg at 50% 50%, #b7f568 0deg, #00aeef 120deg, #ba1a1a 240deg, #b7f568 360deg);
+  mask: radial-gradient(transparent 55%, black 56%);
+  -webkit-mask: radial-gradient(transparent 55%, black 56%);
+}
+
+/* Inner glow */
+.inner-glow {
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.6);
+}
+
+/* Glossy ring (Health page) */
+.glossy-ring {
+  background: conic-gradient(from 180deg at 50% 50%, #b7f568 0deg, #457000 180deg, #b7f568 360deg);
+  padding: 8px;
+  border-radius: 50%;
+  position: relative;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1), 0 5px 15px rgba(69, 112, 0, 0.2);
+}
+.ambient-glow-green {
+  filter: drop-shadow(0 0 12px rgba(183, 245, 104, 0.6));
+}
+
+/* Bubble icon (Health page) */
+.bubble-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.2) 60%, rgba(255, 255, 255, 0.1) 100%);
+  box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.05), 5px 10px 20px rgba(0, 101, 141, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+.bubble-icon::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  width: 25px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transform: rotate(-15deg);
+}
+
+/* Specular highlight (Trends page) */
+.specular-highlight {
+  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 50%);
+}
+
+/* Chart glow */
+.chart-glow {
+  filter: drop-shadow(0 0 8px rgba(0, 174, 239, 0.6));
+}
+
+/* Floating orb */
+.floating-orb {
+  position: fixed;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 174, 239, 0.2) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: -1;
+  animation: floatOrb 15s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+@keyframes floatOrb {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 100px); }
+}
+
+/* Background drift */
+@keyframes drift {
+  from { transform: translateX(0) scale(1.1); }
+  to { transform: translateX(-50px) scale(1.1); }
+}
+.bg-animate {
+  animation: drift 60s infinite alternate linear;
+  transform: scale(1.1);
+}
+
+/* Floating animation */
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: floating 4s ease-in-out infinite;
+}
+
+/* Material icons font */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+}

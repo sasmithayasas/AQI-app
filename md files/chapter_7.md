@@ -1,0 +1,34 @@
+# CHAPTER 7: CONCLUSION AND FUTURE WORK
+
+## 7.1 Chapter Overview
+This final chapter synthesizes the outcomes of the SentinelAQ research project. Section 7.2 evaluates the completion of the established research objectives. Section 7.3 provides the overall conclusion of the study, directly answering the core research questions. Finally, Section 7.4 outlines strategic, forward-looking future work, identifying specific avenues for expanding this research beyond its current scope.
+
+## 7.2 Research Summary and Objective Evaluation
+This research set out to design, develop, and evaluate a multi-horizon machine learning forecasting framework tailored for the distinct urban topographies of Sri Lanka. A review of the methodology and results confirms that all seven SMART objectives established in Chapter 1 were successfully executed:
+1.  **Data Synchronization:** A multi-modal dataset was successfully constructed by fusing PurpleAir telemetry with Open-Meteo meteorological proxies.
+2.  **Feature Engineering:** The critical 48-dimensional feature vector, utilizing rolling means and cyclical encodings, was engineered to capture non-linear accumulation.
+3.  **Model Training:** SARIMAX, XGBoost, and LSTM models were rigorously trained.
+4.  **Multi-Horizon Evaluation:** The models were mathematically benchmarked across 1h to 48h horizons, proving topographical variances between Colombo and Kandy.
+5.  **Explainability:** SHAP was integrated, successfully deconstructing the predictive "black box" into actionable atmospheric insights.
+6.  **Pipeline Automation:** The inference logic was wrapped into an automated Python backend synchronized with Google Firebase.
+7.  **Mobile Deployment:** The React Native SentinelAQ application was successfully deployed, visualizing real-time forecasts and triggering threshold-based push notifications.
+
+## 7.3 Overall Conclusion
+The primary problem addressed by this study was the lack of reliable, topography-aware, and multi-horizon PM2.5 forecasting in Sri Lanka. By iteratively developing the SentinelAQ architecture, this research yielded three definitive conclusions that contribute to the domain of environmental computer science:
+
+First, the research concluded that reliance on optical/chemical satellite data (e.g., Sentinel-5P) is currently unviable for high-frequency, short-term forecasting in tropical microclimates. Severe cloud occlusion over mountainous regions like Kandy necessitates a structural reliance on robust ground-level meteorological proxies to ensure data continuity for machine learning pipelines.
+
+Second, the algorithmic benchmarking proved that tree-based ensemble methods (XGBoost) significantly outperform sequential deep learning (LSTM) for multi-horizon environmental forecasting on sparse datasets. By engineering time-lags and rolling statistical means into a tabular format, XGBoost maintained predictive stability up to 48 hours in the future, whereas statistical models (SARIMAX) collapsed after 1 hour, and LSTMs systematically overfit. Furthermore, XGBoost proved vastly superior in implementation speed and computational efficiency, making it the optimal choice for cloud-based deployment.
+
+Finally, the integration of Explainable AI (SHAP) mathematically proved that urban topography dictates pollution dynamics. The system revealed that coastal pollution in Colombo is primarily driven by macro-seasonal wind patterns (transboundary dispersion), whereas valley pollution in Kandy is driven by short-term localized accumulation and thermal inversions (valley trapping). Ultimately, SentinelAQ demonstrates that proactive, highly accurate, and transparent public health alerting is computationally feasible in developing nations without requiring massive state-funded sensor infrastructure.
+
+## 7.4 Strategic Future Work
+The development of SentinelAQ establishes a robust foundational architecture. To advance this domain further, future research must build *upon* this infrastructure to address broader environmental challenges.
+
+### 7.4.1 Spatial Expansion via Transfer Learning (Lesser-Covered Districts)
+The current research scope deliberately targeted the two primary economic hubs (Colombo and Kandy) where dense historical sensor data was available. A critical avenue for future work involves deploying the SentinelAQ architecture to rapidly industrializing, lesser-covered districts (such as the Hambantota Port Zone or Jaffna) where historical data is nonexistent. 
+Future research should investigate the application of **Transfer Learning**. By taking the pre-trained XGBoost weights from the Colombo/Kandy models and applying them to new geographical nodes utilizing only real-time weather API inputs, researchers could effectively deploy "virtual sensor nodes." This would allow the system to rapidly scale and map the entire island's air quality without the prohibitive cost of installing physical hardware in every district.
+
+### 7.4.2 Holistic AQI Scale Integration (Uncovered Chemical Elements)
+To address the most immediate threat to public health, this research specifically isolated and modeled PM2.5, which is the primary driver of Sri Lanka's pollution spikes. However, the true US EPA Air Quality Index (AQI) is a composite scale comprising multiple criteria pollutants. 
+As Sri Lanka's industrial manufacturing and energy sectors expand, future iterations of the SentinelAQ inference pipeline must be upgraded to dynamically ingest and forecast uncovered, secondary chemical elements—specifically **Surface Ozone (O3)** and **Sulfur Dioxide (SO2)**. Integrating these distinct chemical vectors into the existing XGBoost feature matrix will transition the architecture from a targeted PM2.5 alerting tool into a fully holistic, EPA-standardized AQI forecasting engine, providing a more comprehensive defense for public health.

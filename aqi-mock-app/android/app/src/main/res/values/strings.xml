@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SentinelAQ</string>
+    <string name="title_activity_main">SentinelAQ</string>
+    <string name="package_name">com.sentinelaq.app</string>
+    <string name="custom_url_scheme">com.sentinelaq.app</string>
+</resources>

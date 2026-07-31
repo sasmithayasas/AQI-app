@@ -1,0 +1,39 @@
+# Node
+node_modules/
+dist/
+build/
+.npm/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+.cache/
+.cache.sqlite
+
+# Android / Capacitor
+aqi-mock-app/android/.gradle/
+aqi-mock-app/android/app/build/
+aqi-mock-app/android/capacitor-cordova-android-plugins/
+aqi-mock-app/android/app/src/main/assets/public/
+.gradle/
+*.apk
+*.aab
+
+# Data (Ignore all large files, but KEEP the models folder)
+files/
+!files/training/
+files/training/*
+!files/training/outputs/
+files/training/outputs/*
+!files/training/outputs/models/
+files/training/outputs/models/*
+!files/training/outputs/models/*.json
+
+# Env
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db

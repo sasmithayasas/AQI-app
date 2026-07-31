@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AeroAQI - Health &amp; Activities</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;family=Geist:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface-container-low": "#1c1b1d",
+                "surface-container-high": "#2a2a2c",
+                "surface-container-lowest": "#0e0e10",
+                "primary": "#dbfcff",
+                "secondary-fixed-dim": "#fface8",
+                "on-error": "#690005",
+                "secondary-fixed": "#ffd7f0",
+                "surface-tint": "#00dbe9",
+                "on-primary-fixed-variant": "#004f54",
+                "on-tertiary-fixed": "#161c22",
+                "secondary": "#fface8",
+                "outline": "#849495",
+                "on-secondary-fixed": "#3a0033",
+                "inverse-primary": "#006970",
+                "on-primary-container": "#006970",
+                "on-secondary-container": "#520049",
+                "tertiary-container": "#d4dae2",
+                "surface-bright": "#39393b",
+                "on-primary": "#00363a",
+                "on-surface-variant": "#b9cacb",
+                "tertiary": "#f1f6ff",
+                "surface-container-highest": "#353437",
+                "surface": "#131315",
+                "on-error-container": "#ffdad6",
+                "on-surface": "#e5e1e4",
+                "on-tertiary": "#2b3137",
+                "surface-dim": "#131315",
+                "inverse-surface": "#e5e1e4",
+                "on-tertiary-fixed-variant": "#41474e",
+                "background": "#131315",
+                "surface-container": "#201f21",
+                "on-tertiary-container": "#595f66",
+                "on-secondary-fixed-variant": "#840076",
+                "error-container": "#93000a",
+                "outline-variant": "#3b494b",
+                "on-primary-fixed": "#002022",
+                "primary-fixed-dim": "#00dbe9",
+                "surface-variant": "#353437",
+                "on-secondary": "#5e0053",
+                "inverse-on-surface": "#313032",
+                "error": "#ffb4ab",
+                "secondary-container": "#ff24e4",
+                "on-background": "#e5e1e4",
+                "tertiary-fixed-dim": "#c1c7cf",
+                "primary-container": "#00f0ff",
+                "primary-fixed": "#7df4ff",
+                "tertiary-fixed": "#dde3eb",
+                "neon-cyan": "#00f0ff",
+                "liquid-metal": "#c0c0c8",
+                "charcoal": "#1a1a1c"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "margin-desktop": "40px",
+                "container-max": "1280px",
+                "unit": "4px",
+                "margin-mobile": "20px",
+                "gutter": "16px"
+            },
+            "fontFamily": {
+                "display-lg": ["Space Grotesk"],
+                "code-sm": ["JetBrains Mono"],
+                "body-md": ["Geist"],
+                "headline-lg": ["Space Grotesk"],
+                "headline-lg-mobile": ["Space Grotesk"],
+                "label-caps": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0e0e10;
+            color: #e5e1e4;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .y2k-grid {
+            background-image: 
+                linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+        }
+
+        .liquid-metal-panel {
+            background: linear-gradient(145deg, #2a2a2c, #131315);
+            border: 1px solid #3b494b;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .liquid-metal-panel::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, #00f0ff, transparent);
+            opacity: 0.3;
+        }
+
+        .tech-pod {
+            background: radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.15) 0%, transparent 75%);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+            position: relative;
+        }
+
+        .tech-pod::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(135deg, rgba(0,240,255,0.5), transparent, rgba(0,240,255,0.2));
+            z-index: -1;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            padding: 1px;
+        }
+
+        .digital-readout {
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.7);
+        }
+
+        .sony-button {
+            background: #2a2a2c;
+            border: 1px solid #849495;
+            color: #dbfcff;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        }
+
+        .sony-button:hover {
+            background: #00f0ff;
+            color: #002022;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+        }
+
+        .hex-pod {
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 240, 255, 0.05);
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            position: relative;
+        }
+        
+        .status-pill {
+            background: #1c1b1d;
+            border: 1px solid #3b494b;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            padding: 2px 8px;
+            color: #00f0ff;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(0, 240, 255, 0.1);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="font-body-md">
+<div class="y2k-grid"></div>
+<!-- Header -->
+<header class="w-full sticky top-0 z-50 bg-surface-container-lowest/80 backdrop-blur-md border-b border-outline-variant flex items-center justify-between px-margin-mobile h-16">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+<h1 class="font-display-lg text-primary text-xl tracking-widest uppercase">AERO_AQI.SYS</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-high border border-outline-variant rounded-sm">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="location_on">location_on</span>
+<span class="digital-readout text-[10px] text-primary">LOC: COLOMBO_SL</span>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-4 py-8 pb-32">
+<!-- Hero Section -->
+<section class="liquid-metal-panel p-8 mb-8 rounded-xl">
+<div class="scanline"></div>
+<div class="flex flex-col md:flex-row items-center gap-12">
+<div class="relative">
+<div class="w-56 h-56 rounded-full border-4 border-charcoal flex items-center justify-center relative shadow-[0_0_40px_rgba(0,240,255,0.15)]">
+<!-- Orbiting Ring -->
+<div class="absolute inset-0 border border-primary/20 rounded-full animate-[spin_10s_linear_infinite]"></div>
+<div class="flex flex-col items-center">
+<span class="digital-readout text-6xl text-neon-cyan neon-glow leading-none">32</span>
+<span class="digital-readout text-xs text-primary/60 mt-2">AQI_UNITS</span>
+<div class="mt-4 px-4 py-1 bg-neon-cyan/10 border border-neon-cyan/30">
+<span class="digital-readout text-xs text-neon-cyan font-bold">STATUS: EXCELLENT</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex-1 space-y-6">
+<div>
+<h2 class="digital-readout text-2xl text-primary mb-2">SYSTEM_REPORT: ATMOSPHERIC</h2>
+<p class="text-on-surface-variant text-sm leading-relaxed font-body-md border-l-2 border-primary/30 pl-4">
+                            CURRENT ATMOSPHERIC CONDITIONS IN SRI LANKA ARE NOMINAL. OPTIMAL FOR BIOLOGICAL RESPIRATORY FUNCTIONS. PARTICULATE SCAN COMPLETE.
+                        </p>
+</div>
+<div class="flex flex-wrap gap-3">
+<div class="status-pill">PM2.5: 08ug/m3</div>
+<div class="status-pill">HUM: 65%</div>
+<div class="status-pill">UV_IDX: LOW</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Recommended Activities -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="h-[1px] flex-1 bg-gradient-to-r from-transparent to-primary/20"></div>
+<h3 class="digital-readout text-primary text-sm tracking-[0.3em]">REC_ACTIVITIES.BIN</h3>
+<div class="h-[1px] flex-1 bg-gradient-to-l from-transparent to-primary/20"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Running -->
+<div class="tech-pod p-8 rounded-2xl flex flex-col items-center text-center group transition-all duration-300 hover:bg-neon-cyan/5">
+<div class="hex-pod mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-neon-cyan text-4xl" data-icon="directions_run">directions_run</span>
+</div>
+<h4 class="digital-readout text-primary mb-3">CYBER_ATHLETICS</h4>
+<p class="text-xs text-on-surface-variant mb-6 h-10">OPTIMAL WINDOW DETECTED FOR HIGH-ENDURANCE CARDIOVASCULAR ACTIVITY.</p>
+<div class="digital-readout text-[10px] text-neon-cyan flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-neon-cyan animate-pulse"></span>
+                        REC_HIGH
+                    </div>
+</div>
+<!-- Cycling -->
+<div class="tech-pod p-8 rounded-2xl flex flex-col items-center text-center group transition-all duration-300 hover:bg-neon-cyan/5">
+<div class="hex-pod mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-neon-cyan text-4xl" data-icon="directions_bike">directions_bike</span>
+</div>
+<h4 class="digital-readout text-primary mb-3">KINETIC_FLOW</h4>
+<p class="text-xs text-on-surface-variant mb-6 h-10">AIR PURITY INDEX ALLOWS FOR MAXIMUM OXYGEN INTAKE DURING CYCLING.</p>
+<div class="digital-readout text-[10px] text-neon-cyan flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-neon-cyan animate-pulse"></span>
+                        PEAK_CONDITION
+                    </div>
+</div>
+<!-- Outdoor Yoga -->
+<div class="tech-pod p-8 rounded-2xl flex flex-col items-center text-center group transition-all duration-300 hover:bg-neon-cyan/5">
+<div class="hex-pod mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-neon-cyan text-4xl" data-icon="self_improvement">self_improvement</span>
+</div>
+<h4 class="digital-readout text-primary mb-3">NEURAL_STASIS</h4>
+<p class="text-xs text-on-surface-variant mb-6 h-10">PRISTINE AIR QUALITY INDEX RECOMMENDED FOR DEEP RESPIRATORY MEDITATION.</p>
+<div class="digital-readout text-[10px] text-neon-cyan flex items-center gap-2">
+<span class="w-1 h-1 rounded-full bg-neon-cyan animate-pulse"></span>
+                        OPT_PURITY
+                    </div>
+</div>
+</div>
+</section>
+<!-- Health Data Blocks -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+<div class="liquid-metal-panel p-6 border-l-4 border-l-neon-cyan">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-neon-cyan" data-icon="shield_health">shield_health</span>
+<div>
+<h4 class="digital-readout text-xs text-primary mb-2">VULNERABILITY_ASSESSMENT</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+                            SENSITIVE GROUPS: RISK LEVELS MINIMAL. ALLERGY SENSORS DETECT MODERATE POLLEN, BUT AQI REMAINS WITHIN SAFETY PARAMETERS.
+                        </p>
+</div>
+</div>
+</div>
+<div class="liquid-metal-panel p-6 border-l-4 border-l-primary">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+<div>
+<h4 class="digital-readout text-xs text-primary mb-2">SYSTEM_TIP.LOG</h4>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+                            RECOMMENDATION: INITIATE FULL VENTILATION OF INDOOR LIVING SPACES. PURGE POLLUTANTS VIA CROSS-FLOW AIR EXCHANGE.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Regional Forecast -->
+<section class="liquid-metal-panel p-8 rounded-xl">
+<div class="flex justify-between items-center mb-8">
+<h3 class="digital-readout text-primary text-sm">REGIONAL_HEURISTICS</h3>
+<button class="sony-button">DETAILS</button>
+</div>
+<div class="space-y-4">
+<!-- Location Row -->
+<div class="group flex items-center justify-between p-4 bg-charcoal/50 border border-outline-variant/30 hover:border-neon-cyan/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container flex items-center justify-center digital-readout text-neon-cyan text-xs border border-outline-variant">C</div>
+<div>
+<p class="digital-readout text-xs text-primary">COLOMBO_DST</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">URBAN_COASTAL</p>
+</div>
+</div>
+<div class="text-right">
+<p class="digital-readout text-neon-cyan text-sm">32_AQI</p>
+<div class="w-32 h-1 bg-surface-container-highest mt-2 relative overflow-hidden">
+<div class="absolute inset-0 bg-neon-cyan w-1/3 shadow-[0_0_10px_rgba(0,240,255,0.8)]"></div>
+</div>
+</div>
+</div>
+<!-- Location Row -->
+<div class="group flex items-center justify-between p-4 bg-charcoal/50 border border-outline-variant/30 hover:border-neon-cyan/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container flex items-center justify-center digital-readout text-neon-cyan text-xs border border-outline-variant">K</div>
+<div>
+<p class="digital-readout text-xs text-primary">KANDY_DST</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">CENTRAL_HLND</p>
+</div>
+</div>
+<div class="text-right">
+<p class="digital-readout text-neon-cyan text-sm">28_AQI</p>
+<div class="w-32 h-1 bg-surface-container-highest mt-2 relative overflow-hidden">
+<div class="absolute inset-0 bg-neon-cyan w-1/4 shadow-[0_0_10px_rgba(0,240,255,0.8)]"></div>
+</div>
+</div>
+</div>
+<!-- Location Row -->
+<div class="group flex items-center justify-between p-4 bg-charcoal/50 border border-outline-variant/30 hover:border-neon-cyan/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 bg-surface-container flex items-center justify-center digital-readout text-neon-cyan text-xs border border-outline-variant">J</div>
+<div>
+<p class="digital-readout text-xs text-primary">JAFFNA_DST</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">NORTH_PEN</p>
+</div>
+</div>
+<div class="text-right">
+<p class="digital-readout text-primary text-sm">45_AQI</p>
+<div class="w-32 h-1 bg-surface-container-highest mt-2 relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/50 w-1/2"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-outline-variant flex justify-around items-center px-4 py-3 pb-6">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="digital-readout text-[8px] mt-1">HOME</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="radar">radar</span>
+<span class="digital-readout text-[8px] mt-1">SCAN</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-neon-cyan transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="digital-readout text-[8px] mt-1">DATA</span>
+</a>
+<a class="flex flex-col items-center justify-center text-neon-cyan relative" href="#">
+<div class="absolute -inset-2 bg-neon-cyan/10 blur-md rounded-full"></div>
+<span class="material-symbols-outlined" data-icon="health_and_safety" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+<span class="digital-readout text-[8px] mt-1">BIOMETRICS</span>
+</a>
+</nav>
+</body></html>

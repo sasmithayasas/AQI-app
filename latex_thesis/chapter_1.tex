@@ -1,0 +1,197 @@
+\chapter{CHAPTER 1: INTRODUCTION}\label{chapter-1-introduction}
+
+\section{1.1 Background and Motivation}\label{background-and-motivation}
+
+Air pollution is increasingly recognized as a critical global health
+crisis. According to the World Health Organization (WHO), prolonged
+exposure to fine particulate matter (PM2.5) is linked to severe
+cardiovascular and respiratory diseases, accounting for millions of
+premature deaths globally (WHO, 2021). In South Asia, rapid urbanization
+and industrial growth have exacerbated air quality deterioration. Sri
+Lanka, while historically enjoying better air quality than its
+continental neighbors, has experienced significant pollution spikes in
+recent years. These spikes are primarily driven by vehicular emissions,
+industrial activities, and transboundary air pollution carried by
+seasonal monsoonal winds (Rathnayake et al., 2023).
+
+In Sri Lanka, the two most economically and culturally significant urban
+centers are Colombo and Kandy. These cities possess distinct
+topographies that create unique microclimates and dispersion mechanisms.
+Colombo, the commercial capital located on the western coastal plain,
+typically benefits from the ``sea breeze effect'' which aids in
+pollution dispersion, yet suffers from high chronic vehicular emissions.
+Conversely, Kandy is a heritage city situated within a central highland
+valley. This geography creates a ``valley trapping'' effect, where
+surrounding mountains prevent the dispersion of locally generated
+emissions, particularly during frequent thermal inversions (Ambanwala,
+2025).
+
+Despite these growing public health risks, Sri Lanka currently relies on
+sparse, retrospective data networks---such as the low-cost PurpleAir
+sensor network---which report current conditions but lack predictive
+capabilities (Dhammapala et al., 2022). To enact proactive health
+management and targeted interventions (e.g., closing schools or issuing
+traffic restrictions), citizens and municipal authorities require highly
+accurate, localized forecasts rather than reactive measurements.
+
+\section{1.2 Problem Statement}\label{problem-statement}
+
+The primary problem addressed in this research is the absence of a
+reliable, localized, and multi-horizon PM2.5 forecasting system in Sri
+Lanka that structurally accounts for the country's distinct urban
+topographies. Existing monitoring solutions merely report historical or
+present conditions, leaving a critical gap in proactive, predictive
+awareness. Furthermore, standard high-accuracy machine learning
+forecasting models operate as ``black boxes,'' providing numerical
+predictions without elucidating the underlying drivers of the pollution
+(e.g., whether an impending spike is driven by historical accumulation,
+humidity, or cyclical time patterns). This lack of model transparency
+severely hinders the ability of environmental authorities to trust the
+predictions and implement effective, targeted public health
+interventions.
+
+\section{1.3 Research Gap}\label{research-gap}
+
+Current literature concerning air quality forecasting in tropical,
+developing nations reveals significant limitations, specifically in the
+Sri Lankan context. This research explicitly addresses three identified
+gaps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{The Multi-Horizon Predictive Gap:} What is missing is a
+  comprehensive benchmarking of diverse algorithmic families across
+  extended forecasting windows. While some local studies (Kurukulasuriya
+  et al., 2025; Fernando et al., 2022) have explored short-term air
+  quality trends using isolated models, there is no systematic
+  evaluation comparing statistical (SARIMAX), machine learning
+  (XGBoost), and deep learning (LSTM) approaches across 1, 6, 12, 24,
+  and 48-hour horizons.
+\item
+  \textbf{The Topographical Comparative Gap:} Existing predictive models
+  in the region are predominantly trained on homogeneous, coastal
+  terrains (Colombo) and lack spatial awareness. What hasn't been done
+  is a direct, empirical comparison of how forecasting accuracy and
+  optimal feature sets degrade or shift when applied to a valley basin
+  (Kandy) versus a coastal metropolis (Colombo).
+\item
+  \textbf{The Interpretability Gap:} High-accuracy predictive models in
+  the local literature universally suffer from the ``black box''
+  trade-off (Attanayake et al., 2025). There is a complete absence of
+  Explainable AI (XAI) frameworks---specifically SHAP (SHapley Additive
+  exPlanations)---applied to Sri Lankan air quality forecasting to
+  quantify and interpret exactly \emph{why} a model predicts a severe
+  PM2.5 event.
+\end{enumerate}
+
+\section{1.4 Research Aim}\label{research-aim}
+
+To \textbf{design} a multi-horizon, feature-engineered machine learning
+forecasting framework integrated with Explainable AI (SHAP),
+\textbf{develop} an automated inference pipeline culminating in a
+consumer-facing mobile application, and \textbf{evaluate} its predictive
+performance and interpretability across the distinct coastal and valley
+topographies of Colombo and Kandy.
+
+\section{1.5 Research Objectives}\label{research-objectives}
+
+To achieve the stated aim, the following Specific, Measurable,
+Achievable, Relevant, and Time-bound (SMART) objectives have been
+formulated:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  To \textbf{collect and synchronize} a multi-modal dataset comprising
+  hourly PurpleAir PM2.5 ground telemetry and Open-Meteo meteorological
+  data for Colombo and Kandy, spanning from January 2022 to December
+  2024.
+\item
+  To \textbf{engineer} a 48-dimensional feature vector---incorporating
+  complex time-lagged variables, rolling statistical means, and cyclical
+  trigonometric time encodings---to capture non-linear atmospheric
+  patterns.
+\item
+  To \textbf{design and train} a statistical baseline (SARIMAX), an
+  ensemble machine learning model (XGBoost), and a sequential deep
+  learning architecture (LSTM Encoder-Decoder) for PM2.5 forecasting.
+\item
+  To \textbf{evaluate} model accuracy across 1, 6, 12, 24, and 48-hour
+  horizons on unseen 2025 test data using Root Mean Squared Error (RMSE)
+  and Mean Absolute Error (MAE), explicitly comparing performance
+  between coastal and valley topographies.
+\item
+  To \textbf{implement} Explainable AI (SHAP) to quantify, visualize,
+  and interpret the top three meteorological and temporal features
+  driving predictions for both cities.
+\item
+  To \textbf{develop} an automated backend Python inference pipeline
+  that fetches real-time data, executes the optimal forecasting model,
+  and writes the resulting predictions to a Firebase cloud database.
+\item
+  To \textbf{design and deploy} a React Native mobile application
+  (SentinelAQ) that consumes the Firebase payload, providing end-users
+  with real-time AQI dials, 48-hour charts, SHAP insights, and
+  threshold-based push notifications.
+\end{enumerate}
+
+\section{1.6 Research Challenges}\label{research-challenges}
+
+Addressing the identified problem domain presents several notable
+challenges: * \textbf{Data Quality and the Pivot from Satellite Fusion:}
+The initial architecture proposed the spatio-temporal fusion of daily
+Sentinel-5P satellite chemical vectors (NO2) with hourly ground data.
+However, a major domain-specific challenge was encountered: severe cloud
+occlusion over Kandy's valley and Sri Lanka's tropical monsoons resulted
+in massive satellite data gaps. Furthermore, the frequency mismatch
+(daily satellite passes vs.~hourly ground fluctuations) degraded
+short-term forecasting accuracy. This necessitated a strategic
+methodological pivot to rely on robust, high-frequency meteorological
+proxy data (Open-Meteo) rather than satellite imagery. * \textbf{The
+``Black Box'' Trade-off:} Deep learning and ensemble models inherently
+lack transparency. Integrating SHAP is computationally expensive and
+complex to implement for multi-horizon regression tasks, but it is an
+absolute necessity to secure end-user trust and policy support. *
+\textbf{Multi-Horizon Error Propagation:} Forecasting accuracy naturally
+and exponentially degrades over extended horizons (e.g., 48 hours). The
+technical challenge lies in engineering sufficiently robust
+autoregressive features (like 24-hour rolling means) that allow the
+models to maintain acceptable error margins two days into the future.
+
+\section{1.7 Contributions}\label{contributions}
+
+This research provides the following novel contributions to knowledge,
+methodology, and practice: * \textbf{Methodological Innovation:} It
+provides empirical validation that feature-engineered, tree-based
+ensemble learning (XGBoost) significantly outperforms complex sequential
+deep learning (LSTM) for multi-horizon environmental forecasting in
+tropical, developing-nation microclimates. * \textbf{Technical
+Contribution:} This study marks the first application of SHAP
+(Explainable AI) to multi-horizon PM2.5 forecasting in Sri Lanka. It
+pioneers a transparent approach that explicitly quantifies how
+topographical differences alter the driving factors of pollution (e.g.,
+local accumulation in Kandy versus cyclic weather dependencies in
+Colombo). * \textbf{Practical Impact:} It delivers ``SentinelAQ,'' a
+fully functional, end-to-end prototype---from automated data ingestion
+to an intuitive mobile application. This demonstrates a scalable,
+cost-effective framework for deploying predictive environmental AI
+directly to citizens, circumventing the need for expensive government
+sensing infrastructure.
+
+\section{1.8 Chapter Summary}\label{chapter-summary}
+
+This chapter established the critical need for a predictive,
+transparent, and multi-horizon PM2.5 forecasting system tailored to Sri
+Lanka's unique urban topographies. By identifying the limitations in
+current retrospective monitoring and the ``black box'' nature of
+existing predictive models, explicit research gaps were defined. The
+subsequent aim and SMART objectives laid out a structured framework to
+design, develop, and evaluate the SentinelAQ system, while acknowledging
+the inherent meteorological and technical challenges. The following
+chapter provides a comprehensive review of related literature,
+critically evaluating existing approaches to air quality forecasting and
+establishing why the methodologies selected for this study are
+necessary.

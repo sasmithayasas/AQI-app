@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AeroAQI - Kandy Detailed View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Geist:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#1c1b1d",
+                        "surface-container-high": "#2a2a2c",
+                        "surface-container-lowest": "#0e0e10",
+                        "primary": "#dbfcff",
+                        "secondary-fixed-dim": "#fface8",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#ffd7f0",
+                        "surface-tint": "#00dbe9",
+                        "on-primary-fixed-variant": "#004f54",
+                        "on-tertiary-fixed": "#161c22",
+                        "secondary": "#fface8",
+                        "outline": "#849495",
+                        "on-secondary-fixed": "#3a0033",
+                        "inverse-primary": "#006970",
+                        "on-primary-container": "#006970",
+                        "on-secondary-container": "#520049",
+                        "tertiary-container": "#d4dae2",
+                        "surface-bright": "#39393b",
+                        "on-primary": "#00363a",
+                        "on-surface-variant": "#b9cacb",
+                        "tertiary": "#f1f6ff",
+                        "surface-container-highest": "#353437",
+                        "surface": "#131315",
+                        "on-error-container": "#ffdad6",
+                        "on-surface": "#e5e1e4",
+                        "on-tertiary": "#2b3137",
+                        "surface-dim": "#131315",
+                        "inverse-surface": "#e5e1e4",
+                        "on-tertiary-fixed-variant": "#41474e",
+                        "background": "#131315",
+                        "surface-container": "#201f21",
+                        "on-tertiary-container": "#595f66",
+                        "on-secondary-fixed-variant": "#840076",
+                        "error-container": "#93000a",
+                        "outline-variant": "#3b494b",
+                        "on-primary-fixed": "#002022",
+                        "primary-fixed-dim": "#00dbe9",
+                        "surface-variant": "#353437",
+                        "on-secondary": "#5e0053",
+                        "inverse-on-surface": "#313032",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#ff24e4",
+                        "on-background": "#e5e1e4",
+                        "tertiary-fixed-dim": "#c1c7cf",
+                        "primary-container": "#00f0ff",
+                        "primary-fixed": "#7df4ff",
+                        "tertiary-fixed": "#dde3eb",
+                        "cyan-glow": "#00f0ff",
+                        "magenta-glow": "#ff24e4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "container-max": "1280px",
+                        "unit": "4px",
+                        "margin-mobile": "20px",
+                        "gutter": "16px",
+                        "glass-margin": "12px",
+                        "container-padding": "24px",
+                        "desktop-max-width": "1200px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Space Grotesk"],
+                        "code-sm": ["JetBrains Mono"],
+                        "body-md": ["Geist"],
+                        "headline-lg": ["Space Grotesk"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "label-caps": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                        "code-sm": ["13px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .cyber-bg {
+            background-color: #0e0e10;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 36, 228, 0.05) 0%, transparent 40%),
+                linear-gradient(45deg, rgba(0,0,0,0.8) 0%, rgba(32,31,33,0.9) 100%);
+            position: relative;
+        }
+        
+        .light-leak-cyan {
+            position: fixed;
+            top: -10%;
+            right: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, transparent 70%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .atomic-card {
+            background: rgba(42, 42, 44, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .atomic-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .cyber-button {
+            background: #1c1b1d;
+            border: 1px solid #00f0ff;
+            color: #00f0ff;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        .cyber-button:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 12px #00f0ff;
+        }
+
+        .glow-magenta {
+            box-shadow: 0 0 12px #ff24e4;
+        }
+
+        .map-grid-overlay {
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        .wide-tech-font {
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .metallic-ring {
+            border: 4px solid #353437;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .scanline::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 240, 255, 0.4);
+            animation: scanline 4s linear infinite;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="cyber-bg text-on-surface font-body-md min-h-screen overflow-x-hidden selection:bg-primary-container">
+<div class="light-leak-cyan"></div>
+<!-- Header -->
+<header class="w-full top-0 sticky z-50 bg-surface/80 backdrop-blur-md border-b border-white/5 shadow-lg h-16 flex items-center justify-between px-container-padding">
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-primary hover:text-white transition-colors">menu</button>
+<h1 class="font-display-lg text-primary text-xl md:text-2xl tracking-tighter">Aero<span class="text-secondary">AQI</span></h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden md:block font-label-caps text-primary-fixed-dim bg-surface-container-highest/50 px-3 py-1 rounded border border-primary/20 wide-tech-font text-[10px]">KANDY</span>
+<button class="material-symbols-outlined text-primary hover:text-white transition-colors">account_circle</button>
+</div>
+</header>
+<main class="max-w-desktop-max-width mx-auto px-glass-margin md:px-container-padding py-8 pb-32">
+<!-- Hero Section -->
+<div class="flex flex-col md:flex-row gap-8 items-center mb-12">
+<div class="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center atomic-card rounded-full metallic-ring group">
+<div class="z-10 text-center">
+<span class="font-label-caps text-on-surface-variant block mb-1 text-[10px]">SYSTEM STATUS</span>
+<span class="font-display-lg text-primary text-7xl md:text-8xl drop-shadow-[0_0_15px_rgba(0,240,255,0.4)]">42</span>
+<span class="font-label-caps text-primary-fixed-dim font-bold block mt-1 tracking-widest text-[10px]">OPTIMAL AIR</span>
+</div>
+<!-- Scanning Effect -->
+<div class="absolute inset-0 rounded-full overflow-hidden opacity-20">
+<div class="absolute inset-0 map-grid-overlay"></div>
+</div>
+</div>
+<div class="flex-1 space-y-4 text-center md:text-left">
+<h2 class="wide-tech-font text-2xl md:text-3xl text-primary drop-shadow-[0_0_8px_rgba(219,252,255,0.3)]">KANDY_DATA_STREAM</h2>
+<p class="text-on-surface-variant max-w-lg font-light leading-relaxed">Atmospheric conditions within parameters. Air quality is acceptable for all biological systems. Outdoor activities recommended in the Central Sector.</p>
+<!-- Health Alert -->
+<div class="atomic-card p-4 rounded-lg flex items-center gap-4 border-l-4 border-primary overflow-hidden">
+<div class="flex-shrink-0 w-10 h-10 bg-surface-container-high rounded flex items-center justify-center border border-primary/30">
+<span class="material-symbols-outlined text-primary text-xl">shield</span>
+</div>
+<div class="flex-1">
+<span class="font-label-caps text-primary text-[10px] block mb-1">HEALTH_LOG</span>
+<p class="text-sm font-medium text-on-surface opacity-90">Kandy Lake perimeter environment is clear. No protection needed.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Pollutant Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- PM2.5 Card -->
+<div class="atomic-card p-6 rounded-xl group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-primary text-sm">filter_center_focus</span>
+</div>
+<span class="font-label-caps text-primary text-[10px] px-2 py-0.5 bg-primary/10 border border-primary/20 rounded">GOOD</span>
+</div>
+<h3 class="font-label-caps text-on-surface-variant text-[10px] mb-1">PM 2.5_PARTICLES</h3>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-4xl text-primary">12.4</span>
+<span class="text-[10px] font-label-caps text-on-surface-variant">µg/m³</span>
+</div>
+<div class="mt-4 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[25%] rounded-full glow-cyan"></div>
+</div>
+</div>
+<!-- PM10 Card -->
+<div class="atomic-card p-6 rounded-xl group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-primary text-sm">blur_on</span>
+</div>
+<span class="font-label-caps text-primary text-[10px] px-2 py-0.5 bg-primary/10 border border-primary/20 rounded">LOW</span>
+</div>
+<h3 class="font-label-caps text-on-surface-variant text-[10px] mb-1">PM 10_PARTICLES</h3>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-4xl text-primary">28.1</span>
+<span class="text-[10px] font-label-caps text-on-surface-variant">µg/m³</span>
+</div>
+<div class="mt-4 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[35%] rounded-full glow-cyan"></div>
+</div>
+</div>
+<!-- NO2 Card -->
+<div class="atomic-card p-6 rounded-xl group hover:border-secondary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-secondary text-sm">gas_meter</span>
+</div>
+<span class="font-label-caps text-secondary text-[10px] px-2 py-0.5 bg-secondary/10 border border-secondary/20 rounded">MID</span>
+</div>
+<h3 class="font-label-caps text-on-surface-variant text-[10px] mb-1">NO2_GAS_LEVEL</h3>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-4xl text-secondary">15.8</span>
+<span class="text-[10px] font-label-caps text-on-surface-variant">ppb</span>
+</div>
+<div class="mt-4 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[55%] rounded-full glow-magenta"></div>
+</div>
+</div>
+<!-- Ozone Card -->
+<div class="atomic-card p-6 rounded-xl group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-primary text-sm">air</span>
+</div>
+<span class="font-label-caps text-primary text-[10px] px-2 py-0.5 bg-primary/10 border border-primary/20 rounded">FRESH</span>
+</div>
+<h3 class="font-label-caps text-on-surface-variant text-[10px] mb-1">O3_OZONE_LAYER</h3>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-4xl text-primary">31.0</span>
+<span class="text-[10px] font-label-caps text-on-surface-variant">ppb</span>
+</div>
+<div class="mt-4 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[15%] rounded-full glow-cyan"></div>
+</div>
+</div>
+</div>
+<!-- Secondary Information -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="atomic-card p-6 rounded-xl relative min-h-[300px] overflow-hidden">
+<h3 class="wide-tech-font text-primary text-sm mb-4">MAP_SCANNER_V1.0</h3>
+<div class="w-full h-48 rounded overflow-hidden border border-primary/20 relative scanline">
+<div class="w-full h-full bg-cover bg-center grayscale contrast-125" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDwc7N3F0VOsQ-4ijAOE0UCvdb0w-4j6zpQJT4gPC5YwRKfIixOZGNXtU8ZgSKOUf7CXPk79Jc01ujRD7DDkJ4qpbhMleDcAmVWsQ_HrDcnn9r7MVG3uOyu1W6hUFhhmNgpMY8ZJC6aJwsPMElJbYH9aXqXHJIy6bzH9mSEmD67Z9apMPUHyZqmNgKqlqxc4IuWoW0O86Hk1kAdmpIp4ed_Le4Tp16EUkgwIW_KbkpSNuMhyf2HCjEcWA')"></div>
+<!-- Cyan Grid Overlay -->
+<div class="absolute inset-0 map-grid-overlay opacity-60"></div>
+</div>
+<button class="mt-6 w-full py-3 rounded cyber-button font-bold text-xs">INITIALIZE_MAP_EXPLORER</button>
+</div>
+<div class="space-y-6">
+<div class="atomic-card p-6 rounded-xl border border-white/5">
+<h4 class="font-label-caps text-primary text-[10px] mb-4">SYSTEM_TIPS</h4>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-sm">memory</span>
+<span class="text-sm font-light text-on-surface-variant">Atmospheric peak recorded: 06:00 - 08:00 Local Time.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-sm">humidity_mid</span>
+<span class="text-sm font-light text-on-surface-variant">High moisture density (68%) impacting particulate dispersion.</span>
+</li>
+</ul>
+</div>
+<div class="atomic-card p-6 rounded-xl bg-surface-container-high/40 border border-primary/10">
+<h4 class="font-label-caps text-primary text-[10px] mb-3">WEATHER_DATA_POINT</h4>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">wb_sunny</span>
+<div>
+<span class="text-2xl font-bold tracking-tighter text-primary">24°C</span>
+<span class="text-[10px] block text-on-surface-variant font-label-caps">SKY_CLEAR</span>
+</div>
+</div>
+<div class="text-right">
+<span class="text-[10px] font-label-caps text-on-surface-variant block">HUMIDITY</span>
+<span class="font-bold text-primary">68%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface-container-lowest/95 backdrop-blur-2xl border-t border-white/10 flex justify-around items-center px-4 py-3 pb-6">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined text-xl">home</span>
+<span class="font-label-caps text-[9px] mt-1">HUB</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary relative">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-label-caps text-[9px] mt-1">GRID</span>
+<div class="absolute -top-1 w-1 h-1 bg-primary rounded-full glow-cyan"></div>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined text-xl">query_stats</span>
+<span class="font-label-caps text-[9px] mt-1">LOGS</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined text-xl">vital_signs</span>
+<span class="font-label-caps text-[9px] mt-1">BIO</span>
+</button>
+</nav>
+<script>
+        // Tech-inspired interactions
+        document.querySelectorAll('.atomic-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Subtle shine shift
+                const glowX = (x / rect.width) * 100;
+                const glowY = (y / rect.height) * 100;
+                card.style.background = `radial-gradient(circle at ${glowX}% ${glowY}%, rgba(0, 240, 255, 0.05) 0%, rgba(42, 42, 44, 0.6) 80%)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.background = 'rgba(42, 42, 44, 0.6)';
+            });
+        });
+    </script>
+</body></html>

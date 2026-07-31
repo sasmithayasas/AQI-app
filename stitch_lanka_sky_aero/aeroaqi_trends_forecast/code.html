@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AeroAQI - Trends &amp; Forecast</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Fira+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#513300",
+                    "primary-fixed-dim": "#82cfff",
+                    "on-surface-variant": "#3e4850",
+                    "tertiary-fixed-dim": "#ffb953",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#00aeef",
+                    "surface-dim": "#dadada",
+                    "surface-container-low": "#f3f3f4",
+                    "on-secondary-container": "#457000",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#82cfff",
+                    "surface-container-highest": "#e2e2e2",
+                    "on-surface": "#1a1c1c",
+                    "outline": "#6e7881",
+                    "on-secondary-fixed-variant": "#304f00",
+                    "tertiary-container": "#db951f",
+                    "primary-fixed": "#c6e7ff",
+                    "surface": "#f9f9f9",
+                    "surface-bright": "#f9f9f9",
+                    "on-primary-container": "#003e58",
+                    "on-background": "#1a1c1c",
+                    "inverse-surface": "#2f3131",
+                    "surface-container": "#eeeeee",
+                    "outline-variant": "#bdc8d1",
+                    "on-secondary": "#ffffff",
+                    "surface-tint": "#00658d",
+                    "on-tertiary-fixed-variant": "#633f00",
+                    "surface-container-high": "#e8e8e8",
+                    "tertiary": "#825500",
+                    "surface-variant": "#e2e2e2",
+                    "background": "#f9f9f9",
+                    "secondary-fixed": "#b7f568",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#102000",
+                    "tertiary-fixed": "#ffddb4",
+                    "primary": "#00658d",
+                    "inverse-on-surface": "#f0f1f1",
+                    "on-primary-fixed-variant": "#004c6b",
+                    "secondary-fixed-dim": "#9cd84f",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#291800",
+                    "secondary": "#416900",
+                    "on-primary-fixed": "#001e2d",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#b7f568"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "glass-margin": "12px",
+                    "container-padding": "24px",
+                    "element-gap": "16px",
+                    "desktop-max-width": "1200px"
+            },
+            "fontFamily": {
+                    "display-aqi": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Fira Sans"],
+                    "label-caps": ["Fira Sans"]
+            },
+            "fontSize": {
+                    "display-aqi": ["72px", {"lineHeight": "80px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .frutiger-glass {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 101, 141, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .aqua-button {
+            background: linear-gradient(to bottom, #7dd3fc 0%, #0ea5e9 50%, #0369a1 100%);
+            position: relative;
+            overflow: hidden;
+            border-radius: 9999px;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+
+        .aqua-button::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 5%;
+            width: 90%;
+            height: 45%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
+            border-radius: 9999px;
+        }
+
+        .chart-glow {
+            filter: drop-shadow(0 0 8px rgba(0, 174, 239, 0.6));
+        }
+
+        .specular-highlight {
+            background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 50%);
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .animate-float {
+            animation: floating 4s ease-in-out infinite;
+        }
+
+        .bg-mesh {
+            background-color: #f9f9f9;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(130, 207, 255, 0.3) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(183, 245, 104, 0.2) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(219, 149, 31, 0.1) 0px, transparent 50%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-mesh min-h-screen text-on-surface font-body-md overflow-x-hidden">
+<!-- Background Layer: Scenic Atmosphere -->
+<div class="fixed inset-0 -z-10 overflow-hidden">
+<div class="w-full h-full object-cover scale-110 opacity-40" data-alt="A high-definition macro photograph of crystal clear water droplets on a lush green leaf, with bright sunlight creating beautiful bokeh highlights and soft blue sky reflections. The style is classic Frutiger Aero with high saturation, deep gloss textures, and a feeling of fresh, pure environmental optimism. The lighting is high-key and airy, evoking a clean, breathable world." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAJ9JT04DHSCydxRGHIZ1cU__LZfXo49m1hW3Fh6-joyNznJL36bZ4lFvkIjTpZGEB5iRp5FzRB8giI0_1rbIszu-HWQjwT6N0MaBVA2iLUW3tpxfuJAtqSZTnCrHJKMjdyZEUPMoYVlHvr4ZEi98p03MihmyyZVgXUc27W6Yp20VulVIW0CNufE9Cuh0M0Pv7_Ktz2x7IsJ6WJufB4EmAoqPRWWAn34Olg2ODsnLQRYi7UnIjo4Z7eRA')"></div>
+</div>
+<!-- Top App Bar -->
+<header class="w-full top-0 sticky z-[60] bg-surface/60 backdrop-blur-xl border-b border-white/30 shadow-[0_4px_12px_rgba(0,101,141,0.1)] transition-all duration-300">
+<div class="flex items-center justify-between px-container-padding h-16 w-full">
+<button class="hover:bg-white/20 p-2 rounded-full transition-all active:scale-95">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+<h1 class="font-display-aqi text-primary tracking-tight font-headline-lg-mobile text-headline-lg-mobile">AeroAQI</h1>
+<button class="hover:bg-white/20 p-2 rounded-full transition-all active:scale-95">
+<span class="material-symbols-outlined text-primary">account_circle</span>
+</button>
+</div>
+</header>
+<main class="max-w-desktop-max-width mx-auto px-4 pt-6 pb-24 md:pb-12">
+<!-- Hero Section: Current Trend Summary -->
+<section class="mb-element-gap">
+<div class="frutiger-glass p-6 rounded-3xl relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 blur-3xl rounded-full -mr-16 -mt-16"></div>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Current Trend</p>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary flex items-center gap-2">
+                            Improving Quality
+                            <span class="material-symbols-outlined text-secondary-fixed-dim" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</h2>
+<p class="text-on-surface-variant max-w-md mt-2">The air quality index has decreased by 15 points over the last 6 hours due to steady coastal breezes.</p>
+</div>
+<div class="bg-primary/10 rounded-full px-6 py-3 border border-white/40 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">schedule</span>
+<span class="font-bold text-primary">Updated 2m ago</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Trends Section: Interactive Chart -->
+<section class="mb-element-gap">
+<div class="frutiger-glass p-6 md:p-8 rounded-[2.5rem]">
+<div class="flex justify-between items-center mb-8">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-primary-container">24h History</h3>
+<div class="flex gap-2">
+<button class="px-4 py-1.5 rounded-full text-label-caps bg-primary text-on-primary shadow-sm">AQI</button>
+<button class="px-4 py-1.5 rounded-full text-label-caps bg-white/40 text-on-surface-variant border border-white/50">PM2.5</button>
+</div>
+</div>
+<!-- Skeuomorphic Chart Mockup -->
+<div class="relative w-full h-64 md:h-80 flex items-end justify-between px-2 pt-10">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between py-10">
+<div class="w-full border-t border-primary/10"></div>
+<div class="w-full border-t border-primary/10"></div>
+<div class="w-full border-t border-primary/10"></div>
+<div class="w-full border-t border-primary/10"></div>
+</div>
+<!-- Glowing Path Visualization -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 800 320">
+<defs>
+<lineargradient id="chartGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#00aeef" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#00aeef" stop-opacity="0"></stop>
+</lineargradient>
+<filter id="glow">
+<fegaussianblur result="blur" stddeviation="4"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Area Fill -->
+<path d="M0,220 Q100,240 200,160 Q300,80 400,140 Q500,200 600,120 Q700,40 800,60 L800,320 L0,320 Z" fill="url(#chartGradient)"></path>
+<!-- Line -->
+<path d="M0,220 Q100,240 200,160 Q300,80 400,140 Q500,200 600,120 Q700,40 800,60" fill="none" filter="url(#glow)" stroke="#00aeef" stroke-linecap="round" stroke-width="4"></path>
+<!-- Highlight Points -->
+<circle cx="200" cy="160" fill="#fff" r="6" stroke="#00aeef" stroke-width="3"></circle>
+<circle cx="600" cy="120" fill="#fff" r="6" stroke="#00aeef" stroke-width="3"></circle>
+</svg>
+<!-- Time Labels -->
+<div class="absolute bottom-0 w-full flex justify-between text-label-caps text-on-surface-variant/60 px-2 pb-2">
+<span>12 PM</span>
+<span>4 PM</span>
+<span>8 PM</span>
+<span>12 AM</span>
+<span>4 AM</span>
+<span>8 AM</span>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="p-4 rounded-2xl bg-white/20 border border-white/30">
+<span class="text-label-caps opacity-60">PEAK AQI</span>
+<div class="text-xl font-bold text-primary">82</div>
+</div>
+<div class="p-4 rounded-2xl bg-white/20 border border-white/30">
+<span class="text-label-caps opacity-60">LOWEST AQI</span>
+<div class="text-xl font-bold text-secondary">34</div>
+</div>
+<div class="p-4 rounded-2xl bg-white/20 border border-white/30">
+<span class="text-label-caps opacity-60">AVG HUMIDITY</span>
+<div class="text-xl font-bold text-primary">64%</div>
+</div>
+<div class="p-4 rounded-2xl bg-white/20 border border-white/30">
+<span class="text-label-caps opacity-60">PRECIPITATION</span>
+<div class="text-xl font-bold text-primary">12%</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Forecast Section: Glass Bubbles -->
+<section class="mb-element-gap">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-6 px-2">3-Day Forecast</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Day 1 Bubble -->
+<div class="frutiger-glass p-8 rounded-[3rem] text-center group hover:scale-[1.02] transition-transform duration-500 animate-float" style="animation-delay: 0s;">
+<p class="font-label-caps text-label-caps text-primary mb-4">TOMORROW</p>
+<div class="relative w-32 h-32 mx-auto mb-6">
+<div class="absolute inset-0 bg-secondary-fixed-dim/30 rounded-full blur-2xl"></div>
+<div class="relative w-full h-full bg-gradient-to-br from-white to-secondary-container rounded-full flex items-center justify-center border-2 border-white shadow-lg overflow-hidden">
+<div class="absolute inset-0 specular-highlight opacity-60"></div>
+<span class="material-symbols-outlined text-secondary text-5xl" style="font-variation-settings: 'FILL' 1;">wb_sunny</span>
+</div>
+</div>
+<div class="font-display-aqi text-4xl text-primary mb-2">42</div>
+<div class="bg-secondary/10 text-secondary font-bold text-label-caps px-4 py-1 rounded-full inline-block">EXCELLENT</div>
+<p class="text-on-surface-variant text-sm mt-4">Clear skies and moderate wind expected all day.</p>
+</div>
+<!-- Day 2 Bubble -->
+<div class="frutiger-glass p-8 rounded-[3rem] text-center group hover:scale-[1.02] transition-transform duration-500 animate-float" style="animation-delay: 0.5s;">
+<p class="font-label-caps text-label-caps text-primary mb-4">WEDNESDAY</p>
+<div class="relative w-32 h-32 mx-auto mb-6">
+<div class="absolute inset-0 bg-primary-container/30 rounded-full blur-2xl"></div>
+<div class="relative w-full h-full bg-gradient-to-br from-white to-primary-fixed rounded-full flex items-center justify-center border-2 border-white shadow-lg overflow-hidden">
+<div class="absolute inset-0 specular-highlight opacity-60"></div>
+<span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">cloud_queue</span>
+</div>
+</div>
+<div class="font-display-aqi text-4xl text-primary mb-2">58</div>
+<div class="bg-primary/10 text-primary font-bold text-label-caps px-4 py-1 rounded-full inline-block">GOOD</div>
+<p class="text-on-surface-variant text-sm mt-4">Partly cloudy. Pollen levels may rise slightly.</p>
+</div>
+<!-- Day 3 Bubble -->
+<div class="frutiger-glass p-8 rounded-[3rem] text-center group hover:scale-[1.02] transition-transform duration-500 animate-float" style="animation-delay: 1s;">
+<p class="font-label-caps text-label-caps text-primary mb-4">THURSDAY</p>
+<div class="relative w-32 h-32 mx-auto mb-6">
+<div class="absolute inset-0 bg-tertiary-container/30 rounded-full blur-2xl"></div>
+<div class="relative w-full h-full bg-gradient-to-br from-white to-tertiary-fixed rounded-full flex items-center justify-center border-2 border-white shadow-lg overflow-hidden">
+<div class="absolute inset-0 specular-highlight opacity-60"></div>
+<span class="material-symbols-outlined text-tertiary text-5xl" style="font-variation-settings: 'FILL' 1;">thunderstorm</span>
+</div>
+</div>
+<div class="font-display-aqi text-4xl text-primary mb-2">31</div>
+<div class="bg-secondary/10 text-secondary font-bold text-label-caps px-4 py-1 rounded-full inline-block">EXCELLENT</div>
+<p class="text-on-surface-variant text-sm mt-4">Rain will wash away lingering pollutants.</p>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="mt-8 mb-12 flex justify-center">
+<button class="aqua-button px-10 py-5 text-white font-bold text-lg flex items-center gap-3 active:scale-95 transition-all shadow-xl">
+<span>View Global Health Alerts</span>
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 bg-surface/70 backdrop-blur-2xl border-t border-white/40 shadow-[0_-8px_20px_rgba(0,0,0,0.05)] flex justify-around items-center px-4 py-3 pb-6 rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 transition-transform duration-200 ease-out active:scale-90 hover:opacity-100" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-caps text-label-caps mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 transition-transform duration-200 ease-out active:scale-90 hover:opacity-100" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-label-caps text-label-caps mt-1">Map</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container/80 text-on-primary-container rounded-full px-4 py-1 ring-1 ring-white/50 shadow-inner transition-transform duration-200 ease-out active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">show_chart</span>
+<span class="font-label-caps text-label-caps mt-1">Trends</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-70 transition-transform duration-200 ease-out active:scale-90 hover:opacity-100" href="#">
+<span class="material-symbols-outlined">health_and_safety</span>
+<span class="font-label-caps text-label-caps mt-1">Health</span>
+</a>
+</nav>
+<!-- Desktop Sidebar/Nav (Integrated into TopBar or visible here) -->
+<div class="hidden md:block">
+<!-- Floating FAB for Desktop Insight -->
+<button class="fixed bottom-10 right-10 w-16 h-16 aqua-button rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all z-[100]">
+<span class="material-symbols-outlined text-white text-3xl">insights</span>
+</button>
+</div>
+<script>
+        // Micro-interaction for bubble parallax on mouse move
+        document.addEventListener('mousemove', (e) => {
+            const bubbles = document.querySelectorAll('.animate-float');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            bubbles.forEach((bubble, index) => {
+                const speed = (index + 1) * 10;
+                const moveX = (x - 0.5) * speed;
+                const moveY = (y - 0.5) * speed;
+                bubble.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+    </script>
+</body></html>
