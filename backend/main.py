@@ -270,7 +270,10 @@ def get_forecast(city: str = "kandy"):
         "co": {"value": float(round(float(current_row["co"]))), "pct": f"{int(min(100, (float(current_row['co'])/1000)*100))}%"},
         "confidence": confidence_pct,
         "shap": {"humidity": str(shap_humidity), "temp": str(shap_temp), "wind": str(shap_wind), "topo": str(shap_topo)},
-        "lastUpdated": str(current_row["time"].isoformat()),
+        "lastUpdated": {
+            "openMeteo": str(current_row["time"].isoformat()),
+            "modelServer": str(pd.Timestamp.now(tz='UTC').isoformat())
+        },
         "forecasts": [{"horizon": int(p["horizon"]), "time": str(p["time"]), "pm25": float(p["pm25"]), "aqi": int(p["aqi"])} for p in predictions],
         "past48h": [{"time": str(t.isoformat()), "aqi": int(pm25_to_aqi(p))} for t, p in zip(past_df["time"].tail(48), past_df["pm25"].tail(48))],
         "historical": {
