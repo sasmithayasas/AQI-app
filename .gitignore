@@ -37,3 +37,12 @@ files/training/outputs/models/*
 # OS
 .DS_Store
 Thumbs.db
+
+# Archives
+*.zip
+*.tar.gz
+
+# IDEs
+.idea/
+.vscode/
+*.swp

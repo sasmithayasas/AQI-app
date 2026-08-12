@@ -31,6 +31,8 @@ const translations = {
     adviceWindows: 'Keep windows shut',
     dataSource: 'Data Source',
     lastUpdated: 'Last Updated',
+    apiUpdated: 'API Updated',
+    modelUpdated: 'Model Updated',
     aqiExplainerTitle: 'Understanding Air Quality',
     aqiExplainerDesc: 'AQI (Air Quality Index) measures how clean or polluted the air is. PM2.5 refers to microscopic particles like dust or smoke that can enter your lungs. A lower AQI is always healthier.',
 
@@ -124,6 +126,8 @@ const translations = {
     adviceWindows: 'ජනෙල් වසා තබන්න',
     dataSource: 'දත්ත මූලාශ්‍රය',
     lastUpdated: 'අවසන් යාවත්කාලීන කිරීම',
+    apiUpdated: 'API යාවත්කාලීනය',
+    modelUpdated: 'ආකෘති යාවත්කාලීනය',
     aqiExplainerTitle: 'වායු තත්ත්වය අවබෝධ කර ගැනීම',
     aqiExplainerDesc: 'AQI (වායු තත්ත්ව දර්ශකය) මගින් වාතයේ පිරිසිදු බව මනිනු ලබයි. PM2.5 යනු පෙණහලුවලට ඇතුළු විය හැකි දූවිලි හෝ දුම වැනි අන්වීක්ෂීය අංශු වේ. අඩු AQI අගයක් සෞඛ්‍යයට හිතකරය.',
 
@@ -217,6 +221,8 @@ const translations = {
     adviceWindows: 'ஜன்னல்களை மூடி வைக்கவும்',
     dataSource: 'தரவு ஆதாரம்',
     lastUpdated: 'கடைசியாக புதுப்பிக்கப்பட்டது',
+    apiUpdated: 'API புதுப்பிக்கப்பட்டது',
+    modelUpdated: 'மாதிரி புதுப்பிக்கப்பட்டது',
     aqiExplainerTitle: 'காற்று தரத்தை புரிந்துகொள்வது',
     aqiExplainerDesc: 'AQI (காற்று தர குறியீடு) காற்று எவ்வளவு சுத்தமாக உள்ளது என்பதை அளவிடுகிறது. PM2.5 என்பது உங்கள் நுரையீரலில் நுழையக்கூடிய தூசி அல்லது புகை போன்ற சிறிய துகள்களை குறிக்கிறது. குறைவான AQI எப்போதும் ஆரோக்கியமானது.',
 

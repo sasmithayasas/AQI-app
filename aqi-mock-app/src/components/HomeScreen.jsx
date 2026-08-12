@@ -178,9 +178,16 @@ export default function HomeScreen({ data, onToggleCity, onNavigateToInsights, o
           </div>
           <div className="flex items-center gap-2 opacity-60">
             <span className="material-symbols-outlined text-white text-[11px]">schedule</span>
-            <span className="text-[9px] font-bold text-white uppercase tracking-widest">
-              {t('lastUpdated')}: {data.lastUpdated && data.lastUpdated !== '--' ? new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Loading...'}
-            </span>
+            {typeof data.lastUpdated === 'object' ? (
+                <div className="flex flex-col text-right pr-2 border-r border-white/20 mr-2">
+                  <span className="text-[9px] font-bold text-white uppercase tracking-widest">{t('apiUpdated')}: {new Date(data.lastUpdated.openMeteo).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className="text-[9px] font-bold text-white uppercase tracking-widest">{t('modelUpdated')}: {new Date(data.lastUpdated.modelServer).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+              ) : (
+                <span className="text-[9px] font-bold text-white uppercase tracking-widest">
+                  {t('lastUpdated')}: {data.lastUpdated && data.lastUpdated !== '--' ? new Date(data.lastUpdated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Loading...'}
+                </span>
+              )}
             <button 
               onClick={onRefresh} 
               disabled={loading} 
