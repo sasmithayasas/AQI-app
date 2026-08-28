@@ -14,7 +14,19 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: 'index.html'
-    }
-  }
+      input: 'index.html',
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          capacitor: [
+            '@capacitor/core',
+            '@capacitor/app',
+            '@capacitor/local-notifications',
+            '@capacitor/filesystem',
+            '@capacitor/share',
+          ],
+        },
+      },
+    },
+  },
 })

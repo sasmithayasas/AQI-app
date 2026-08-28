@@ -1,48 +1,104 @@
-# Node
+# ── Node & Frontend Builds ──────────────────────────────────────────
 node_modules/
+**/node_modules/
 dist/
+**/dist/
 build/
+**/build/
 .npm/
 
-# Python
+# ── Python & Environments ───────────────────────────────────────────
+.venv/
+.venv*/
 venv/
+**/venv/
 __pycache__/
-*.pyc
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite
+*.sqlite3
+*.db
 .cache/
 .cache.sqlite
+.cache_retrain.sqlite
+*.log
 
-# Android / Capacitor
-aqi-mock-app/android/.gradle/
+# ── Android & Mobile Binaries ───────────────────────────────────────
+.gradle/
+**/.gradle/
+*.apk
+*.aab
 aqi-mock-app/android/app/build/
 aqi-mock-app/android/capacitor-cordova-android-plugins/
 aqi-mock-app/android/app/src/main/assets/public/
-.gradle/
-*.apk
-*.aab
 
-# Data (Ignore all large files, but KEEP the models folder)
-files/*
-!files/training/
-files/training/*
-!files/training/outputs/
-files/training/outputs/*
-!files/training/outputs/models/
-files/training/outputs/models/*
-!files/training/outputs/models/*.json
-
-# Env
+# ── Environment & Secrets ───────────────────────────────────────────
 .env
-.env.local
+.env.*
+*.pem
+*.key
 
-# OS
+# ── Operating System Artifacts ───────────────────────────────────────
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Archives
+# ── Archives & Installers ────────────────────────────────────────────
 *.zip
 *.tar.gz
+*.rar
+*.7z
+*.msi
+Full_Thesis_Academic_Final.tex
 
-# IDEs
+# ── Thesis & Non-App Documents (Ignored from Repository) ─────────────
+files/
+latex_thesis/
+md files/
+thesis/
+READ V23/
+merging/
+stitch_lanka_sky_aero/
+mock uml diagrams/
+*.tex
+*.docx
+*.pdf
+*.pptx
+*.xlsx
+*.csv
+
+# Exceptions: Allow ML dataset CSVs inside ml/data/
+!ml/data/**/*.csv
+!ml/data/**/*.xlsx
+
+# ── Root Temp Scripts & Server Configs ──────────────────────────────
+*.html
+!aqi-mock-app/index.html
+!backend/templates/*.html
+api.yasasretail.cfd
+weather.yasasretail.cfd
+route53_change.json
+aqi-backend.service
+rubric_compliance_review.md
+SentinelAQ_Presentation_Defense_Guide.md
+stitch_prompt.md
+.geminiignore
+.ignore
+GEMINI.md
+.agents/
+
+# ── Root Temporary Images (Allow images inside app and uml) ───────────
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+!aqi-mock-app/**
+!assetimg/**
+!uml/**
+
+# ── IDEs ────────────────────────────────────────────────────────────
 .idea/
 .vscode/
 *.swp
+*.swo
