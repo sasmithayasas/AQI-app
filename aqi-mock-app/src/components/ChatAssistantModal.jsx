@@ -146,19 +146,42 @@ export default function ChatAssistantModal({ data, city }) {
     setMessages(getInitialMessages())
   }
 
-  // Simple Markdown-like formatter for bold text and bullet points
+  // Markdown formatter with LaTeX formula cleanup
   const renderFormattedText = (text) => {
-    const lines = text.split('\n')
+    let clean = (text || '')
+      .replace(/\$\\text\{PM\}\_?\{?2\.5\}?\$|\$\\text\{PM2\.5\}\$/gi, 'PM2.5')
+      .replace(/\$\\text\{PM\}\_?\{?10\}?\$|\$\\text\{PM10\}\$/gi, 'PM10')
+      .replace(/\$\\text\{NO\}\_?\{?2\}?\$|\$\\text\{NO2\}\$/gi, 'NO₂')
+      .replace(/\$\\text\{O\}\_?\{?3\}?\$|\$\\text\{O3\}\$/gi, 'O₃')
+      .replace(/\$\\text\{SO\}\_?\{?2\}?\$|\$\\text\{SO2\}\$/gi, 'SO₂')
+      .replace(/\$\\text\{CO\}\$/gi, 'CO')
+      .replace(/\$\\text\{CO\}\_?\{?2\}?\$|\$\\text\{CO2\}\$/gi, 'CO₂')
+      .replace(/\$\\text\{([^}]+)\}\$/g, '$1')
+      .replace(/\\text\{([^}]+)\}/g, '$1')
+      .replace(/\\\mu\\text\{g\/m\}\^\{?3\}?/g, 'µg/m³')
+      .replace(/\$\\mu\s*g\/m\^?3\$/gi, 'µg/m³')
+      .replace(/\\mu\s*g\/m\^?3/gi, 'µg/m³')
+      .replace(/\\mu\s*g/gi, 'µg')
+      .replace(/\$([0-9\.\s\-]+)\\text\{([^}]+)\}\$/g, '$1 $2')
+      .replace(/\$([^\$]+)\$/g, '$1')
+      .replace(/\bPM_2\.5\b/g, 'PM2.5')
+      .replace(/\bPM_10\b/g, 'PM10')
+      .replace(/\bNO_2\b/g, 'NO₂')
+      .replace(/\bO_3\b/g, 'O₃')
+
+    const lines = clean.split('\n')
     return lines.map((line, idx) => {
+      const trimmed = line.trim()
       // Bullet lines
-      const isBullet = line.trim().startsWith('•') || line.trim().startsWith('-')
-      const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*')
+      const cleanLine = trimmed.replace(/^[-*•]\s+/, '')
+      const formattedLine = cleanLine.replace(/\*\*(.*?)\*\*/g, '<strong class="text-[#003e58] font-bold">$1</strong>')
 
       return (
         <span
           key={idx}
           className={`block ${isBullet ? 'pl-2 my-0.5' : 'my-1'}`}
-          dangerouslySetInnerHTML={{ __html: formattedLine }}
+          dangerouslySetInnerHTML={{ __html: (isBullet ? '• ' : '') + formattedLine }}
         />
       )
     })
