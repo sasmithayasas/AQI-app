@@ -6,11 +6,12 @@ import urllib.parse
 import urllib.error
 from typing import List, Dict, Optional
 
-# Primary Gemini models in order of preference & speed
+# Primary Gemini models in order of ultra-low latency & response speed
 GEMINI_MODELS = [
-    "gemini-3-flash-preview",
-    "gemini-3.6-flash",
-    "gemini-3.1-flash-lite"
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite-preview",
+    "gemini-3.1-flash-lite",
+    "gemini-3.6-flash"
 ]
 
 # Fast acronym & alias resolver for global cities
@@ -315,9 +316,9 @@ def generate_gemini_response(api_key: str, system_prompt: str, user_message: str
     payload = {
         "contents": contents,
         "generationConfig": {
-            "temperature": 0.4,
-            "maxOutputTokens": 1500,
-            "topP": 0.95
+            "temperature": 0.3,
+            "maxOutputTokens": 450,
+            "topP": 0.9
         }
     }
 
@@ -334,7 +335,7 @@ def generate_gemini_response(api_key: str, system_prompt: str, user_message: str
         )
 
         try:
-            with urllib.request.urlopen(req, timeout=10) as response:
+            with urllib.request.urlopen(req, timeout=5) as response:
                 res_data = json.loads(response.read().decode("utf-8"))
                 candidates = res_data.get("candidates", [])
                 if candidates:

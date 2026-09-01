@@ -8,6 +8,17 @@ export default function ChatAssistantModal({ data, city }) {
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef(null)
 
+  // Handle ESC key to dismiss modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen])
+
   const cityName =
     typeof data?.name === 'string'
       ? data.name
@@ -58,31 +69,30 @@ export default function ChatAssistantModal({ data, city }) {
       { id: 'travel', label: '🚗 பயண சுகாதார எச்சரிக்கை', query: 'தற்போதைய AQI (AQI > 50) இன் அடிப்படையில் இன்று கொழும்பு மற்றும் கண்டி இடையே பயணம் செய்வது பாதுகாப்பானதா?' },
       { id: 'jog', label: '🏃 ஓட சிறந்த நேரம்?', query: cityName + ' இல் இன்று உடற்பயிற்சி செய்ய சிறந்த நேரம் எது?' },
       { id: 'asthma', label: '🫁 குழந்தைகளுக்கு பாதுகாப்பானதா?', query: cityName + ' இல் குழந்தைகள் அல்லது ஆஸ்துமா உள்ளவர்கள் வெளியே செல்லலாமா?' },
-      { id: 'why', label: '🔍 காற்று மாசுபட காரணம்?', query: cityName + ' இல் காற்று தரத்தை பாதிக்கும் முக்கிய காரணிகள் யாவை?' },
+      { id: 'why', label: '🔍 காற்று தரம் பாதிப்புக்கான காரணம்?', query: cityName + ' இல் காற்று தரம் மாறுவதற்கான முக்கிய காரணிகள் யாவை?' },
     ]
   }
 
-  const activePrompts = PROMPTS[lang] || PROMPTS.en
+  const activePrompts = PROMPTS[lang] || PROMPTS['en']
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
+  // Auto-scroll on new message
   useEffect(() => {
-    if (isOpen) {
-      scrollToBottom()
-    }
-  }, [messages, isOpen])
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, isLoading])
+
+  // Reset messages when city or language changes
+  useEffect(() => {
+    setMessages(getInitialMessages())
+  }, [city, lang, data?.aqi])
 
   const handleSendMessage = async (textToSend) => {
-    const query = (textToSend || inputMessage).trim()
-    if (!query || isLoading) return
+    const text = (textToSend || inputMessage).trim()
+    if (!text || isLoading) return
 
-    const userMsgId = Date.now().toString()
     const userMsg = {
-      id: userMsgId,
+      id: Date.now().toString(),
       role: 'user',
-      content: query,
+      content: text,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
 
@@ -91,38 +101,53 @@ export default function ChatAssistantModal({ data, city }) {
     setIsLoading(true)
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'https://weather.yasasretail.cfd'
       const historyPayload = messages
         .filter((m) => m.id !== 'welcome')
-        .slice(-4)
-        .map((m) => ({ role: m.role, content: m.content }))
+        .map((m) => ({
+          role: m.role === 'user' ? 'user' : 'model',
+          content: m.content
+        }))
 
-      const response = await fetch(`${API_URL}/api/chat`, {
+      // Real-time atmospheric telemetry payload
+      const telemetryPayload = {
+        aqi: data?.aqi || 45,
+        status: typeof data?.status === 'string' ? data.status : data?.status?.[lang] || 'Moderate',
+        temp: data?.temperature || '28°C',
+        humidity: data?.humidity || '75%',
+        wind: data?.windSpeed || '12',
+        windDir: data?.windBearing || 225,
+        pm25: data?.pollutants?.pm25 || { value: 12.0 },
+        no2: data?.pollutants?.no2 || { value: 10.0 },
+        o3: data?.pollutants?.o3 || { value: 20.0 },
+        co: data?.pollutants?.co || { value: 300.0 },
+        shap: data?.shap || {},
+        forecasts: data?.forecasts || []
+      }
+
+      const response = await fetch('https://weather.yasasretail.cfd/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: query,
+          message: text,
           city: city || 'kandy',
           lang: lang || 'en',
-          history: historyPayload
+          history: historyPayload,
+          telemetry: telemetryPayload
         })
       })
 
       if (!response.ok) {
-        throw new Error(`API returned status ${response.status}`)
+        throw new Error(`Chat API responded with status ${response.status}`)
       }
 
-      const resData = await response.json()
-      const aiReply = resData.reply || 'I could not generate an answer at this moment.'
-
-      const assistantMsg = {
+      const result = await response.json()
+      const botMsg = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: aiReply,
+        content: result.reply,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
-
-      setMessages((prev) => [...prev, assistantMsg])
+      setMessages((prev) => [...prev, botMsg])
     } catch (err) {
       console.error('[SentinelAI] Chat error:', err)
       const errorMsg = {
@@ -208,9 +233,14 @@ export default function ChatAssistantModal({ data, city }) {
 
       {/* ── 2. Full Interactive Chat Assistant Modal ──────────────────────── */}
       {isOpen && (
-        <div className="fixed inset-0 z-[9995] flex items-end sm:items-center justify-center sm:p-4 bg-black/65 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsOpen(false)
+          }}
+          className="fixed inset-0 z-[9995] flex items-end sm:items-center justify-center p-0 sm:p-3 md:p-4 bg-black/65 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out] overflow-hidden"
+        >
           <div
-            className="relative w-full sm:max-w-md h-[85vh] sm:h-[620px] bg-gradient-to-b from-[#eaf4f7] via-[#f7faf9] to-[#f0f5f4] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-white/80 flex flex-col overflow-hidden"
+            className="relative w-full sm:max-w-md md:max-w-lg h-[92dvh] sm:h-[88dvh] max-h-[620px] bg-gradient-to-b from-[#eaf4f7] via-[#f7faf9] to-[#f0f5f4] rounded-t-3xl sm:rounded-3xl shadow-2xl border border-white/80 flex flex-col overflow-hidden my-auto"
             style={{
               fontFamily:
                 lang === 'si'
@@ -223,56 +253,56 @@ export default function ChatAssistantModal({ data, city }) {
             {/* Ambient background glow */}
             <div className="absolute top-0 right-0 w-44 h-44 bg-[#004c6b]/10 rounded-full blur-3xl -mr-12 -mt-12 pointer-events-none" />
 
-            {/* Chat Modal Header */}
-            <div className="p-4 px-5 bg-white/80 backdrop-blur-md border-b border-black/5 flex items-center justify-between relative z-10 shrink-0 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#004c6b] to-[#007ba8] flex items-center justify-center text-white shadow-md">
-                    <span className="material-symbols-outlined text-[22px]">smart_toy</span>
+            {/* Chat Modal Header (Always Pinned at Top) */}
+            <div className="p-3 sm:p-4 px-4 sm:px-5 bg-white/90 backdrop-blur-md border-b border-black/5 flex items-center justify-between relative z-20 shrink-0 shadow-xs">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="relative shrink-0">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#004c6b] to-[#007ba8] flex items-center justify-center text-white shadow-md">
+                    <span className="material-symbols-outlined text-[20px] sm:text-[22px]">smart_toy</span>
                   </div>
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-emerald-500 border-2 border-white rounded-full" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-extrabold text-[#003e58] leading-none">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h3 className="text-xs sm:text-sm font-extrabold text-[#003e58] leading-none truncate">
                       {t('aiAssistantTitle') || 'SentinelAI Assistant'}
                     </h3>
-                    <span className="text-[9px] font-black bg-[#004c6b]/10 text-[#004c6b] px-1.5 py-0.5 rounded uppercase">
+                    <span className="text-[8.5px] sm:text-[9px] font-black bg-[#004c6b]/10 text-[#004c6b] px-1.5 py-0.5 rounded uppercase">
                       BiLSTM
                     </span>
                   </div>
-                  <p className="text-[11px] font-semibold text-[#52798e] mt-0.5">
+                  <p className="text-[10.5px] sm:text-[11px] font-semibold text-[#52798e] mt-0.5 truncate">
                     {cityName} • <strong className="text-[#004c6b]">AQI {currentAqi}</strong>
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5 shrink-0 ml-2">
                 <button
                   onClick={handleClearChat}
                   title="Clear conversation"
                   aria-label="Clear chat"
-                  className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 active:scale-90 flex items-center justify-center text-[#52798e] transition-all"
+                  className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 active:scale-90 flex items-center justify-center text-[#52798e] transition-all cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[17px]">restart_alt</span>
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
                   aria-label="Close chat"
-                  className="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 active:scale-90 flex items-center justify-center text-[#3e5b6e] transition-all"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-200/90 hover:bg-rose-100 hover:text-rose-600 active:scale-90 flex items-center justify-center text-[#3e5b6e] transition-all shadow-xs shrink-0 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-lg">close</span>
+                  <span className="material-symbols-outlined text-[19px] sm:text-[21px]">close</span>
                 </button>
               </div>
             </div>
 
             {/* Quick Prompt Suggestion Pills */}
-            <div className="py-2.5 px-4 bg-[#e8f1ef]/60 border-b border-black/5 overflow-x-auto whitespace-nowrap no-scrollbar flex gap-2 shrink-0 relative z-10">
+            <div className="py-2 px-3 sm:px-4 bg-[#e8f1ef]/70 border-b border-black/5 overflow-x-auto whitespace-nowrap no-scrollbar flex gap-1.5 sm:gap-2 shrink-0 relative z-10">
               {activePrompts.map((p) => (
                 <button
                   key={p.id}
                   onClick={() => handleSendMessage(p.query)}
-                  className="text-[11px] font-bold bg-white/90 hover:bg-white text-[#004c6b] border border-black/10 px-3 py-1.5 rounded-full shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer flex items-center gap-1"
+                  className="text-[10.5px] sm:text-[11px] font-bold bg-white/90 hover:bg-white text-[#004c6b] border border-black/10 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-xs active:scale-95 transition-all shrink-0 cursor-pointer flex items-center gap-1"
                 >
                   {p.label}
                 </button>
@@ -280,7 +310,7 @@ export default function ChatAssistantModal({ data, city }) {
             </div>
 
             {/* Chat Messages Stream */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3.5 relative z-10">
+            <div className="flex-1 min-h-0 p-3 sm:p-4 overflow-y-auto space-y-3 relative z-10 overscroll-contain">
               {messages.map((msg) => {
                 const isUser = msg.role === 'user'
                 return (
@@ -289,7 +319,7 @@ export default function ChatAssistantModal({ data, city }) {
                     className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} animate-[fadeIn_0.2s_ease-out]`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-sm leading-relaxed ${
+                      className={`max-w-[88%] sm:max-w-[85%] rounded-2xl p-3 sm:p-3.5 text-xs shadow-sm leading-relaxed ${
                         isUser
                           ? 'bg-gradient-to-r from-[#004c6b] to-[#00658d] text-white rounded-br-none'
                           : 'bg-white/95 text-[#1a2e38] border border-black/5 rounded-bl-none shadow-sm'
@@ -297,7 +327,7 @@ export default function ChatAssistantModal({ data, city }) {
                     >
                       {isUser ? msg.content : renderFormattedText(msg.content)}
                     </div>
-                    <span className="text-[9.5px] text-[#6b8593] font-semibold mt-1 px-1">
+                    <span className="text-[9px] sm:text-[9.5px] text-[#6b8593] font-semibold mt-1 px-1">
                       {msg.time}
                     </span>
                   </div>
@@ -307,10 +337,10 @@ export default function ChatAssistantModal({ data, city }) {
               {/* Typing Indicator */}
               {isLoading && (
                 <div className="flex items-start gap-2 animate-[fadeIn_0.2s_ease-out]">
-                  <div className="bg-white/90 border border-black/5 rounded-2xl rounded-bl-none p-3 shadow-sm flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-[#004c6b] animate-bounce [animation-delay:-0.3s]" />
-                    <div className="w-2 h-2 rounded-full bg-[#004c6b] animate-bounce [animation-delay:-0.15s]" />
-                    <div className="w-2 h-2 rounded-full bg-[#004c6b] animate-bounce" />
+                  <div className="bg-white/90 border border-black/5 rounded-2xl rounded-bl-none p-2.5 sm:p-3 shadow-sm flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#004c6b] animate-bounce [animation-delay:-0.3s]" />
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#004c6b] animate-bounce [animation-delay:-0.15s]" />
+                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#004c6b] animate-bounce" />
                   </div>
                 </div>
               )}
@@ -318,7 +348,7 @@ export default function ChatAssistantModal({ data, city }) {
             </div>
 
             {/* Chat Input Bar */}
-            <div className="p-3 px-4 bg-white/90 backdrop-blur-md border-t border-black/5 relative z-10 shrink-0">
+            <div className="p-2.5 sm:p-3 px-3 sm:px-4 bg-white/95 backdrop-blur-md border-t border-black/5 relative z-10 shrink-0">
               <form
                 onSubmit={(e) => {
                   e.preventDefault()
@@ -332,15 +362,15 @@ export default function ChatAssistantModal({ data, city }) {
                   onChange={(e) => setInputMessage(e.target.value)}
                   placeholder={t('chatPlaceholder') || 'Ask SentinelAI anything about your air...'}
                   disabled={isLoading}
-                  className="flex-1 bg-[#f0f5f4] border border-black/10 rounded-2xl px-4 py-2.5 text-xs text-[#002b49] placeholder-[#7d99a5] focus:outline-none focus:border-[#004c6b] focus:ring-1 focus:ring-[#004c6b] transition-all disabled:opacity-50"
+                  className="flex-1 bg-[#f0f5f4] border border-black/10 rounded-2xl px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs text-[#002b49] placeholder-[#7d99a5] focus:outline-none focus:border-[#004c6b] focus:ring-1 focus:ring-[#004c6b] transition-all disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={!inputMessage.trim() || isLoading}
                   aria-label="Send message"
-                  className="w-10 h-10 rounded-2xl bg-[#004c6b] hover:bg-[#003952] active:scale-90 text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:scale-100 shadow-md cursor-pointer shrink-0"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#004c6b] hover:bg-[#003952] active:scale-90 text-white flex items-center justify-center transition-all disabled:opacity-40 disabled:scale-100 shadow-md cursor-pointer shrink-0"
                 >
-                  <span className="material-symbols-outlined text-[19px]">send</span>
+                  <span className="material-symbols-outlined text-[18px] sm:text-[19px]">send</span>
                 </button>
               </form>
             </div>
